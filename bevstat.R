@@ -103,3 +103,20 @@ read_bevstat <- function() {
 
   assign('bevoelkerungsdaten', data.frame(bevoelkerungsdaten), envir = .GlobalEnv)
 }
+#####------------------------------------------------------------------------------------------------------
+
+
+calculate_age <- function(){
+#part2 der Funktion
+  bevfilter <- dplyr::filter(bevoelkerungsdaten, age <100)
+
+  age_per_commune <- ddply (bevfilter, .(commune), function(x) mean(x$age) )
+
+  colnames(age_per_commune) <- c('commune', 'mean age')
+
+  age_per_commune$`mean age` <- round(age_per_commune$`mean age`, digits = 1)
+
+
+  assign('age_per_communes', data.frame(bevoelkerungsdaten), envir = .GlobalEnv)
+}
+calculate_age()
