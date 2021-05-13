@@ -1,0 +1,19 @@
+---
+title: "best_vignett_ever"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{best_vignett_ever}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(bevstat)
+```
