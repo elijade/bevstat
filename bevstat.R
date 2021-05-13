@@ -106,6 +106,12 @@ read_bevstat <- function() {
 #####------------------------------------------------------------------------------------------------------
 
 
+#' statistics calculator
+#'
+#' @return
+#' @export
+#' @importFrom plyr ddply
+#' @examples
 calculate_age <- function(){
 #part2 der Funktion
   bevfilter <- dplyr::filter(bevoelkerungsdaten, age <100)
