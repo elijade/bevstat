@@ -1,8 +1,8 @@
 ---
-title: "best_vignett_ever"
+title: "description"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{best_vignett_ever}
+  %\VignetteIndexEntry{description}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

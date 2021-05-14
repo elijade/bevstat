@@ -14,3 +14,6 @@ This function downloads the Data.frame from the URL: https://data.statistik.gv.a
 The names of the collumns are automatically assigned. Additionally all codes are replaced with their corresponding labels.
 The Data types are set, so they can be used for statistical analysis
 }
+\examples{
+read_bevstat()
+}
