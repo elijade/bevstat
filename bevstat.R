@@ -24,7 +24,7 @@ NULL
 #' @examples
 #' read_bevstat()
 read_bevstat <- function() {
-  bevoelkerungsdaten <- read.table(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020.csv"),header = FALSE, sep = ';', skip = 1)
+  bevoelkerungsdaten <- read.csv(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020.csv"),header = FALSE, sep = ';', skip = 1)
 
 
   ### bennenung der Daten
@@ -45,8 +45,8 @@ read_bevstat <- function() {
   ###temporärer import der tabelle für den alterscode und kommunencode
 
 
-  alter <- read.table(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020_C-GALTEJ112-0.csv"),header = FALSE, sep = ';', skip = 1)
-  kommune <- read.table(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020_C-GRGEMAKT-0.csv"))
+  alter <- read.csv(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020_C-GALTEJ112-0.csv"),header = FALSE, sep = ';', skip = 1)
+  kommune <- read.csv(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020_C-GRGEMAKT-0.csv"))
   ###ANpassung der temporären Tabelle  für das alter
 
 
@@ -110,8 +110,8 @@ read_bevstat <- function() {
 #' calculates the relative age for each commune and outputs it in a table in the global environment. Also gives the mean age.
 #'
 #' @return two tables, one for age distribution and one for mean age
-#' @export
 #' @importFrom plyr ddply
+#' @export
 #' @examples
 calculate_age <- function() {
   bevfilter <- dplyr::filter(bevoelkerungsdaten, age <100)
