@@ -152,8 +152,11 @@ calculate_age <- function() {
 #' @return relative age distribution and mean age
 #' @export
 #'
-#' @examples
+#' @example
+#' \dontrun{
 #' print_row(21001)
+#' }
+#'
 print_row <- function(y){
   age_rel <- as.data.frame(age_rel)
   age_rel <- merge(age_rel, age_per_commune,by='commune')
