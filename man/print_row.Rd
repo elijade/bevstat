@@ -13,7 +13,7 @@ print_row(y)
 relative age distribution and mean age
 }
 \description{
-writting the zip code of the commune into the function will output the relative age distribution as well as the mean age in the commune
+writting the "katestral" code of the commune into the function will output the relative age distribution as well as the mean age in the commune
 }
 \examples{
 print_row(21001)

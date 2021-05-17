@@ -141,12 +141,12 @@ calculate_age <- function() {
 
   }
 
-######---------------------------------------------------------------------------------------------------------
+### Output Funktion gibt für eine Kommune
 
 
 #' prints row in age distribution table
 #' @description
-#' writting the zip code of the commune into the function will output the relative age distribution as well as the mean age in the commune
+#' writting the "katestral" code of the commune into the function will output the relative age distribution as well as the mean age in the commune
 #' @param y
 #'
 #' @return relative age distribution and mean age
@@ -157,8 +157,13 @@ calculate_age <- function() {
 print_row <- function(y){
   age_rel <- as.data.frame(age_rel)
   age_rel <- merge(age_rel, age_per_commune,by='commune')
-  age_rel[which(grepl(y,age_rel$commune)),]
-
+  rowx <-as.data.frame(age_rel[which(grepl(21001,age_rel$commune)),])
+  row.names(rowx) <- rowx$commune
+  rowx[,1] <- NULL
+  rowx <- as.data.frame(t(rowx))
+  as.numeric(rowx[,1])
+  assign('rel_age_commune', data.frame(rowx), envir = .GlobalEnv)
+  print(rel_age_commune)
     }
 #####--------------------------------------------------------------------------------------------------------
 ####Aufgabe 4
@@ -170,6 +175,7 @@ print_row <- function(y){
 #' @import ggplot2
 #' @export
 #' @examples
+#' scatter()
 scatter <- function(){
   size_commune <- data.frame(size = sample(summary(bevoelkerungsdaten$commune, maxsum = 2117)))
   bevfilter <- dplyr::filter(bevoelkerungsdaten, age <6)

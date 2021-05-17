@@ -12,3 +12,6 @@ scatter()
 \description{
 outputs a scatterplot
 }
+\examples{
+scatter()
+}
