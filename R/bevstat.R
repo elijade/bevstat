@@ -113,6 +113,8 @@ read_bevstat <- function() {
 #' @importFrom plyr ddply
 #' @export
 calculate_age <- function() {
+
+  ### 2. teil der aufgabe
   bevfilter <- dplyr::filter(bevoelkerungsdaten, age <100)
   age_per_commune <- ddply (bevfilter, .(commune), function(x) mean(x$age))
   colnames(age_per_commune) <- c('commune', 'mean age')
