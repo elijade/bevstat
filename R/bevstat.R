@@ -24,7 +24,7 @@ NULL
 #' @examples
 #' read_bevstat()
 read_bevstat <- function() {
-  bevoelkerungsdaten <- read.csv(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020.csv"),header = FALSE, sep = ';', skip = 1)
+  bevoelkerungsdaten <- read.csv(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020.csv"),header = FALSE, sep = ';', skip = 1, check.names=FALSE)
 
 
   ### bennenung der Daten
@@ -45,21 +45,23 @@ read_bevstat <- function() {
   ###temporärer import der tabelle für den alterscode und kommunencode
 
 
-  alter <- read.csv(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020_C-GALTEJ112-0.csv"),header = FALSE, sep = ';', skip = 1)
-  kommune <- read.csv(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020_C-GRGEMAKT-0.csv"))
+  alter <- read.csv(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020_C-GALTEJ112-0.csv"),header = FALSE, sep = ';', skip = 1, check.names=FALSE)
+  kommune <- read.csv2(url("https://data.statistik.gv.at/data/OGD_bevstandjbab2002_BevStand_2020_C-GRGEMAKT-0.csv"), check.names=FALSE)
+
+
   ###ANpassung der temporären Tabelle  für das alter
 
+  alter<- subset(alter, select = -c(V4,V5,V6,V7,V8,V9,V10))
+  colnames(alter)<- c('age_code','age','age_cat')
 
-  colnames(alter)[colnames(alter)=='V1'] <- 'age_code'
-  colnames(alter)[colnames(alter)=='V2'] <- 'age'
-  alter<- subset(alter, select = -c(V3,V4,V5,V6,V7,V8,V9,V10))
 
-  ### Anpassung der temporären tabelle für die kommune
+
+   ### Anpassung der temporären tabelle für die kommune
 
 
   colnames(kommune)[colnames(kommune)=='code'] <- 'commune_code'
   colnames(kommune)[colnames(kommune)=='name'] <- 'commune'
-  kommune<- subset(kommune, select = -c(X, en_name, de_desc, de_link, en_desc, en_link, de_syn, en_syn))
+  kommune[3:10] <- NULL
 
   ###merge der Tabellen alter
 
@@ -90,8 +92,14 @@ read_bevstat <- function() {
 
 
   bevoelkerungsdaten$commune <- factor(bevoelkerungsdaten$commune)
-
-
+  bevoelkerungsdaten$commune<- gsub('Ã–', 'Oe', bevoelkerungsdaten$commune)
+  bevoelkerungsdaten$commune<- gsub('Ä', 'Ae', bevoelkerungsdaten$commune)
+  bevoelkerungsdaten$commune<- gsub('Ãœ', 'Ue', bevoelkerungsdaten$commune)
+  bevoelkerungsdaten$commune<- gsub('Ã¶', 'oe', bevoelkerungsdaten$commune)
+  bevoelkerungsdaten$commune<- gsub('Ã¤', 'ae', bevoelkerungsdaten$commune)
+  bevoelkerungsdaten$commune<- gsub('Ã¼', 'ue', bevoelkerungsdaten$commune)
+  bevoelkerungsdaten$commune<- gsub('ÃŸ', 'ss', bevoelkerungsdaten$commune)
+  bevoelkerungsdaten$commune <- factor(bevoelkerungsdaten$commune)
   ###Anpassung geschlecht
 
 
@@ -111,14 +119,88 @@ read_bevstat <- function() {
 #'
 #' @return two tables, one for age distribution and one for mean age
 #' @importFrom plyr ddply
+#' @importFrom scales label_percent
 #' @export
 calculate_age <- function() {
+  ### 1. Teil der Aufgabe
+  age_rel <- as.data.frame.matrix(xtabs( ~commune + age_cat , data=bevoelkerungsdaten))
+  age_rel <- t(apply(age_rel, 1,  FUN = function(i) label_percent()(i/sum(i))))
+  age_rel <- as.data.frame(age_rel)
+  age_rel <- cbind(rownames(age_rel), age_rel)
+  rownames(age_rel) <- NULL
+  colnames(age_rel) <- c('commune', 'Age 0 to 4','Age 5 to 9','Age 10 to 14','Age 15 to 19','Age 20 to 24','Age 25 to 29','Age 30 to 34', 'Age 35 to 39', 'Age 40 to 44', 'Age 45 to 49', 'Age 50 to 54', 'Age 55 to 59', 'Age 60 to 64', 'Age 65 to 69', 'Age 70 to 74', 'Age 75 to 79', 'Age 80 to 84', 'Age 85 to 89', 'Age 90 to 94', 'Age 95 to 99', 'Age 100+')
+  assign('age_rel', as.data.frame.matrix(age_rel), envir = .GlobalEnv)
 
-  ### 2. teil der aufgabe
+
+  ### 2. Teil der Aufgabe
   bevfilter <- dplyr::filter(bevoelkerungsdaten, age <100)
   age_per_commune <- ddply (bevfilter, .(commune), function(x) mean(x$age))
   colnames(age_per_commune) <- c('commune', 'mean age')
   age_per_commune$`mean age` <- round(age_per_commune$`mean age`, digits = 1)
-  assign('age_per_communes', data.frame(bevoelkerungsdaten), envir = .GlobalEnv)
-}
+  assign('age_per_commune', data.frame(age_per_commune), envir = .GlobalEnv)
 
+  }
+
+######---------------------------------------------------------------------------------------------------------
+
+
+#' prints row in age distribution table
+#' @description
+#' writting the zip code of the commune into the function will output the relative age distribution as well as the mean age in the commune
+#' @param y
+#'
+#' @return relative age distribution and mean age
+#' @export
+#'
+#' @examples
+#' print_row(21001)
+print_row <- function(y){
+  age_rel <- as.data.frame(age_rel)
+  age_rel <- merge(age_rel, age_per_commune,by='commune')
+  age_rel[which(grepl(y,age_rel$commune)),]
+
+    }
+#####--------------------------------------------------------------------------------------------------------
+####Aufgabe 4
+
+#' scatterplot alter pro Gemeinde
+#' @description outputs a scatterplot
+#' @return
+#' @importFrom  stringr str_sub
+#' @import ggplot2
+#' @export
+#' @examples
+scatter <- function(){
+  size_commune <- data.frame(size = sample(summary(bevoelkerungsdaten$commune, maxsum = 2117)))
+  bevfilter <- dplyr::filter(bevoelkerungsdaten, age <6)
+  size_commune$child <- (summary(bevfilter$commune, maxsum = 2117))
+  size_commune$relsize <- size_commune$child/size_commune$size
+  size_commune$commune <- row.names(size_commune)
+  size_commune$bundesland <- str_sub(size_commune$commune, start= -7)
+  size_commune$bundesland <- as.numeric(gsub(".*?([0-9]+).*", "\\1", size_commune$bundesland))
+  size_commune$bundesland <- floor(size_commune$bundesland/10000)
+  size_commune$bundesland[size_commune$bundesland == 1] <- 'Burgenland'
+  size_commune$bundesland[size_commune$bundesland == 2] <- 'Kaernten'
+  size_commune$bundesland[size_commune$bundesland == 3] <- 'Niederoesterreich'
+  size_commune$bundesland[size_commune$bundesland == 4] <- 'Oberoesterreich'
+  size_commune$bundesland[size_commune$bundesland == 5] <- 'Salzburg'
+  size_commune$bundesland[size_commune$bundesland == 6] <- 'Steiermark'
+  size_commune$bundesland[size_commune$bundesland == 7] <- 'Tirol'
+  size_commune$bundesland[size_commune$bundesland == 8] <- 'Voralberg'
+  size_commune$bundesland[size_commune$bundesland == 9] <- 'Wien'
+  size_commune$bundesland <- as.factor(size_commune$bundesland)
+  size_commune$commune <- as.factor(size_commune$commune)
+  age_per_commune <- merge(age_per_commune,size_commune, by= 'commune')
+
+
+  test <- ggplot(age_per_commune, aes(x = mean.age, y = relsize, color= bundesland))+
+    geom_point(aes(size = size)) +
+    theme_classic()
+
+  test <- test+
+    xlab("Child/Adult ratio")+
+    ylab("Mean Age")+
+    labs(title = "Mean Age X Child to Adult Ratio")
+  assign('scatter', plot(test), envir = .GlobalEnv)
+  test
+}
