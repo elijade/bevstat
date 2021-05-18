@@ -161,10 +161,10 @@ calculate_age <- function() {
 
 
   bevfilter <- dplyr::filter(bevoelkerungsdaten, age <100)
-  age_per_commune <- ddply (bevfilter, .(commune), function(x) mean(x$age))
-  colnames(age_per_commune) <- c('commune', 'mean age')
-  age_per_commune$`mean age` <- round(age_per_commune$`mean age`, digits = 1)
-  assign('age_per_commune', data.frame(age_per_commune), envir = .GlobalEnv)
+  mean_commune <- ddply (bevfilter, .(commune), function(x) mean(x$age))
+  colnames(mean_commune) <- c('commune', 'mean age')
+  mean_commune$`mean age` <- round(mean_commune$`mean age`, digits = 1)
+  assign('mean_commune', data.frame(mean_commune), envir = .GlobalEnv)
 
   }
 
@@ -186,7 +186,7 @@ calculate_age <- function() {
 #'
 print_row <- function(y){
   age_rel <- as.data.frame(age_rel)
-  age_rel <- merge(age_rel, age_per_commune,by='commune')
+  age_rel <- merge(age_rel, mean_commune,by='commune')
   rowx <-as.data.frame(age_rel[which(grepl(y,age_rel$commune)),])
   row.names(rowx) <- rowx$commune
   rowx[,1] <- NULL
@@ -227,10 +227,10 @@ scatter <- function(){
   size_commune$bundesland[size_commune$bundesland == 9] <- 'Wien'
   size_commune$bundesland <- as.factor(size_commune$bundesland)
   size_commune$commune <- as.factor(size_commune$commune)
-  age_per_commune <- merge(age_per_commune,size_commune, by= 'commune')
+  mean_commune <- merge(mean_commune,size_commune, by= 'commune')
 
 
-  test <- ggplot(age_per_commune, aes(x = mean.age, y = relsize, color= bundesland))+
+  test <- ggplot(mean_commune, aes(x = mean.age, y = relsize, color= bundesland))+
     geom_point(aes(size = size)) +
     theme_classic()
 
