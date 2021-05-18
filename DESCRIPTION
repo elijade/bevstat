@@ -14,5 +14,5 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-Imports: magrittr,dplyr,stringi,scales,stringr, ggplot2
+Imports: magrittr,stringi,plyr,scales,stringr, ggplot2
 VignetteBuilder: knitr

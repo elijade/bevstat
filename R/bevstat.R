@@ -19,7 +19,7 @@ NULL
 #' The Data types are set, so they can be used for statistical analysis
 #' @return A Dataframe which is in working condition
 #' @importFrom stringi stri_extract_last_regex
-#' @import dplyr
+#' @import plyr
 #' @export
 #' @examples
 #' read_bevstat()
@@ -139,7 +139,8 @@ read_bevstat <- function() {
 #'
 #' @return two tables, one for age distribution and one for mean age
 #' @importFrom scales label_percent
-#' @import dplyr
+#' @import plyr
+#'
 #' @export
 calculate_age <- function() {
 
@@ -160,8 +161,8 @@ calculate_age <- function() {
   ### 2. Teil der Aufgabe
 
 
-  bevfilter <- dplyr::filter(bevoelkerungsdaten, age <100)
-  mean_commune <- dplyr::ddply(bevfilter, .(commune), function(x) mean(x$age))
+  bevfilter <- filter(bevoelkerungsdaten, age <100)
+  mean_commune <- ddply(bevfilter, .(commune), function(x) mean(x$age))
   colnames(mean_commune) <- c('commune', 'mean age')
   mean_commune$`mean age` <- round(mean_commune$`mean age`, digits = 1)
   assign('mean_commune', data.frame(mean_commune), envir = .GlobalEnv)
@@ -209,7 +210,7 @@ print_row <- function(y){
 scatter <- function(){
   ### Generierung der Variablen Kommunen Größe und Kind/Erwachsenen ratio
   size_commune <- data.frame(size = sample(summary(bevoelkerungsdaten$commune, maxsum = 2117)))
-  bevfilter <- dplyr::filter(bevoelkerungsdaten, age <6)
+  bevfilter <- filter(bevoelkerungsdaten, age <6)
   size_commune$child <- (summary(bevfilter$commune, maxsum = 2117))
   size_commune$relsize <- size_commune$child/size_commune$size
   size_commune$commune <- row.names(size_commune)
