@@ -140,7 +140,7 @@ read_bevstat <- function() {
 #' @return two tables, one for age distribution and one for mean age
 #' @importFrom scales label_percent
 #' @import plyr
-#'
+#' @import dplyr
 #' @export
 calculate_age <- function() {
 
@@ -161,7 +161,7 @@ calculate_age <- function() {
   ### 2. Teil der Aufgabe
 
 
-  bevfilter <- filter(bevoelkerungsdaten, age <100)
+  bevfilter <- dplyr::filter(bevoelkerungsdaten, age <100)
   mean_commune <- ddply(bevfilter, .(commune), function(x) mean(x$age))
   colnames(mean_commune) <- c('commune', 'mean age')
   mean_commune$`mean age` <- round(mean_commune$`mean age`, digits = 1)
@@ -176,7 +176,6 @@ calculate_age <- function() {
 #' @description
 #' writting the "katestral" code of the commune into the function will output the relative age distribution as well as the mean age in the commune
 #' @param y
-#'
 #' @return relative age distribution and mean age
 #' @export
 #'
@@ -204,13 +203,14 @@ print_row <- function(y){
 #' @return
 #' @importFrom  stringr str_sub
 #' @import ggplot2
+#' @import dplyr
 #' @export
 #' @examples
 #' scatter()
 scatter <- function(){
   ### Generierung der Variablen Kommunen Größe und Kind/Erwachsenen ratio
   size_commune <- data.frame(size = sample(summary(bevoelkerungsdaten$commune, maxsum = 2117)))
-  bevfilter <- filter(bevoelkerungsdaten, age <6)
+  bevfilter <- dplyr:: filter(bevoelkerungsdaten, age <6)
   size_commune$child <- (summary(bevfilter$commune, maxsum = 2117))
   size_commune$relsize <- size_commune$child/size_commune$size
   size_commune$commune <- row.names(size_commune)

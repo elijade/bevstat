@@ -6,9 +6,6 @@
 \usage{
 print_row(y)
 }
-\arguments{
-\item{y}{}
-}
 \value{
 relative age distribution and mean age
 }
