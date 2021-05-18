@@ -152,8 +152,9 @@ calculate_age <- function() {
   age_rel <- as.data.frame(age_rel)
   age_rel <- cbind(rownames(age_rel), age_rel)
   rownames(age_rel) <- NULL
-  assign('age_rel', as.data.frame.matrix(age_rel), envir = .GlobalEnv)
   colnames(age_rel)[1]<- c("commune")
+  assign('age_rel', as.data.frame.matrix(age_rel), envir = .GlobalEnv)
+
 
   ### 2. Teil der Aufgabe
 
