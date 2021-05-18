@@ -139,7 +139,6 @@ read_bevstat <- function() {
 #'
 #' @return two tables, one for age distribution and one for mean age
 #' @importFrom scales label_percent
-#' @import plyr
 #' @import dplyr
 #' @export
 calculate_age <- function() {
@@ -162,7 +161,7 @@ calculate_age <- function() {
 
 
   bevfilter <- dplyr::filter(bevoelkerungsdaten, age <100)
-  mean_commune <- plyr::ddply(bevfilter, .(commune), function(x) mean(x$age))
+  mean_commune <- dplyr::ddply(bevfilter, .(commune), function(x) mean(x$age))
   colnames(mean_commune) <- c('commune', 'mean age')
   mean_commune$`mean age` <- round(mean_commune$`mean age`, digits = 1)
   assign('mean_commune', data.frame(mean_commune), envir = .GlobalEnv)
