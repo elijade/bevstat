@@ -140,6 +140,7 @@ read_bevstat <- function() {
 #' @return two tables, one for age distribution and one for mean age
 #' @importFrom plyr ddply
 #' @importFrom scales label_percent
+#' @import dplyer
 #' @export
 calculate_age <- function() {
 
