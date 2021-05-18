@@ -1,6 +1,6 @@
 
 #---------------------------------------------------------------------------------------------------------------
-#Re-export von %>%
+#Aufgabe 1 Re-export von %>%
 
 #' re-export magrittr pipe operator
 #' @description This line of code imports and re-exports the %>% operator from the package magrittr. Usage of oparator: \code{\link{%>%}}
@@ -11,7 +11,7 @@
 NULL
 
 #---------------------------------------------------------------------------------------------------------------
-
+### AUfgabe 2
 
 #' copies finished Dataset in global environment
 #' @description This function downloads the Data.frame from the URL: https://data.statistik.gv.at/web/meta.jsp?dataset=OGD_bevstandjbab2002_BevStand_2020.
@@ -54,7 +54,27 @@ read_bevstat <- function() {
   alter<- subset(alter, select = -c(V4,V5,V6,V7,V8,V9,V10))
   colnames(alter)<- c('age_code','age','age_cat')
 
-
+  alter$age_cat[alter$age_cat == "GALT5J100-1"] <- 'Age 0 to 4'
+  alter$age_cat[alter$age_cat == "GALT5J100-2"] <- 'Age 5 to 9'
+  alter$age_cat[alter$age_cat == "GALT5J100-3"] <- 'Age 10 to 14'
+  alter$age_cat[alter$age_cat == "GALT5J100-4"] <- 'Age 15 to 19'
+  alter$age_cat[alter$age_cat == "GALT5J100-5"] <- 'Age 20 to 24'
+  alter$age_cat[alter$age_cat == "GALT5J100-6"] <- 'Age 25 to 29'
+  alter$age_cat[alter$age_cat == "GALT5J100-7"] <- 'Age 30 to 24'
+  alter$age_cat[alter$age_cat == "GALT5J100-8"] <- 'Age 35 to 39'
+  alter$age_cat[alter$age_cat == "GALT5J100-9"] <- 'Age 40 to 44'
+  alter$age_cat[alter$age_cat == "GALT5J100-10"] <- 'Age 45 to 49'
+  alter$age_cat[alter$age_cat == "GALT5J100-11"] <- 'Age 50 to 54'
+  alter$age_cat[alter$age_cat == "GALT5J100-12"] <- 'Age 55 to 59'
+  alter$age_cat[alter$age_cat == "GALT5J100-13"] <- 'Age 60 to 64'
+  alter$age_cat[alter$age_cat == "GALT5J100-14"] <- 'Age 65 to 69'
+  alter$age_cat[alter$age_cat == "GALT5J100-15"] <- 'Age 70 to 74'
+  alter$age_cat[alter$age_cat == "GALT5J100-16"] <- 'Age 75 to 79'
+  alter$age_cat[alter$age_cat == "GALT5J100-17"] <- 'Age 80 to 84'
+  alter$age_cat[alter$age_cat == "GALT5J100-18"] <- 'Age 85 to 89'
+  alter$age_cat[alter$age_cat == "GALT5J100-19"] <- 'Age 90 to 94'
+  alter$age_cat[alter$age_cat == "GALT5J100-20"] <- 'Age 95 to 99'
+  alter$age_cat[alter$age_cat == "GALT15J75-6"] <- 'Age 100+'
 
    ### Anpassung der temporären tabelle für die kommune
 
@@ -112,7 +132,7 @@ read_bevstat <- function() {
   assign('bevoelkerungsdaten', data.frame(bevoelkerungsdaten), envir = .GlobalEnv)
 }
 #####------------------------------------------------------------------------------------------------------
-
+### Aufgabe 3
 #' calculating age
 #' @description
 #' calculates the relative age for each commune and outputs it in a table in the global environment. Also gives the mean age.
@@ -122,17 +142,22 @@ read_bevstat <- function() {
 #' @importFrom scales label_percent
 #' @export
 calculate_age <- function() {
+
+
   ### 1. Teil der Aufgabe
+
+
   age_rel <- as.data.frame.matrix(xtabs( ~commune + age_cat , data=bevoelkerungsdaten))
   age_rel <- t(apply(age_rel, 1,  FUN = function(i) label_percent()(i/sum(i))))
   age_rel <- as.data.frame(age_rel)
   age_rel <- cbind(rownames(age_rel), age_rel)
   rownames(age_rel) <- NULL
-  colnames(age_rel) <- c('commune', 'Age 0 to 4','Age 5 to 9','Age 10 to 14','Age 15 to 19','Age 20 to 24','Age 25 to 29','Age 30 to 34', 'Age 35 to 39', 'Age 40 to 44', 'Age 45 to 49', 'Age 50 to 54', 'Age 55 to 59', 'Age 60 to 64', 'Age 65 to 69', 'Age 70 to 74', 'Age 75 to 79', 'Age 80 to 84', 'Age 85 to 89', 'Age 90 to 94', 'Age 95 to 99', 'Age 100+')
   assign('age_rel', as.data.frame.matrix(age_rel), envir = .GlobalEnv)
-
+  colnames(age_rel)[1]<- c("commune")
 
   ### 2. Teil der Aufgabe
+
+
   bevfilter <- dplyr::filter(bevoelkerungsdaten, age <100)
   age_per_commune <- ddply (bevfilter, .(commune), function(x) mean(x$age))
   colnames(age_per_commune) <- c('commune', 'mean age')
@@ -160,7 +185,7 @@ calculate_age <- function() {
 print_row <- function(y){
   age_rel <- as.data.frame(age_rel)
   age_rel <- merge(age_rel, age_per_commune,by='commune')
-  rowx <-as.data.frame(age_rel[which(grepl(21001,age_rel$commune)),])
+  rowx <-as.data.frame(age_rel[which(grepl(y,age_rel$commune)),])
   row.names(rowx) <- rowx$commune
   rowx[,1] <- NULL
   rowx <- as.data.frame(t(rowx))
@@ -172,7 +197,7 @@ print_row <- function(y){
 ####Aufgabe 4
 
 #' scatterplot alter pro Gemeinde
-#' @description outputs a scatterplot
+#' @description outputs a scatterplot with chil
 #' @return
 #' @importFrom  stringr str_sub
 #' @import ggplot2
@@ -180,6 +205,7 @@ print_row <- function(y){
 #' @examples
 #' scatter()
 scatter <- function(){
+  ### Generierung der Variablen Kommunen Größe und Kind/Erwachsenen ratio
   size_commune <- data.frame(size = sample(summary(bevoelkerungsdaten$commune, maxsum = 2117)))
   bevfilter <- dplyr::filter(bevoelkerungsdaten, age <6)
   size_commune$child <- (summary(bevfilter$commune, maxsum = 2117))
@@ -207,8 +233,8 @@ scatter <- function(){
     theme_classic()
 
   test <- test+
-    xlab("Child/Adult ratio")+
-    ylab("Mean Age")+
+    xlab("Mean Age")+
+    ylab("Child/Adult ratio")+
     labs(title = "Mean Age X Child to Adult Ratio")
   assign('scatter', plot(test), envir = .GlobalEnv)
   test

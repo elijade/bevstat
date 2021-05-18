@@ -10,7 +10,7 @@ scatter()
 
 }
 \description{
-outputs a scatterplot
+outputs a scatterplot with chil
 }
 \examples{
 scatter()
