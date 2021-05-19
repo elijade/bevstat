@@ -185,13 +185,17 @@ calculate_age <- function() {
 #' }
 #'
 print_row <- function(y){
+  ### zusammenfügen von mean age und relativer Häufigkeistabelle
   age_rel <- as.data.frame(age_rel)
   age_rel <- merge(age_rel, mean_commune,by='commune')
+  ###funktion um eine bstimmte reihe auszugeben mit der richitgen Kommunen Nummer
   rowx <-as.data.frame(age_rel[which(grepl(y,age_rel$commune)),])
+  ### ANpassung der Tabelle
   row.names(rowx) <- rowx$commune
   rowx[,1] <- NULL
   rowx <- as.data.frame(t(rowx))
   as.numeric(rowx[,1])
+  ### Zuweisung Global Environment
   assign('rel_age_commune', data.frame(rowx), envir = .GlobalEnv)
   print(rel_age_commune)
     }
@@ -217,6 +221,8 @@ scatter <- function(){
   size_commune$bundesland <- str_sub(size_commune$commune, start= -7)
   size_commune$bundesland <- as.numeric(gsub(".*?([0-9]+).*", "\\1", size_commune$bundesland))
   size_commune$bundesland <- floor(size_commune$bundesland/10000)
+
+  ### bennenung der Bundesländer
   size_commune$bundesland[size_commune$bundesland == 1] <- 'Burgenland'
   size_commune$bundesland[size_commune$bundesland == 2] <- 'Kaernten'
   size_commune$bundesland[size_commune$bundesland == 3] <- 'Niederoesterreich'
@@ -230,7 +236,7 @@ scatter <- function(){
   size_commune$commune <- as.factor(size_commune$commune)
   mean_commune <- merge(mean_commune,size_commune, by= 'commune')
 
-
+### Scatterplot für Darstellung
   test <- ggplot(mean_commune, aes(x = mean.age, y = relsize, color= bundesland))+
     geom_point(aes(size = size)) +
     theme_classic()
